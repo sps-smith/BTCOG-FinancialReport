@@ -1,0 +1,82 @@
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+<link href="../siteassets/financialreports/financial.css?v=1.4" rel="stylesheet">
+
+<div>
+  <div id="app">
+    <fn-select></fn-select>
+    <fn-data></fn-data>
+  </div>
+</div>
+
+<script src='https://cdn.polyfill.io/v2/polyfill.min.js'></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vuex"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
+<script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+<script type="text/javascript" src="../siteassets/financialreports/Financial.js"></script>
+<script>
+
+var _select = Vue.component("fn-select",{
+    template:'<div id="dvSelect">\
+                <div>\
+                  <span>Select Month: </span>\
+                  <select v-model="selectedMonth">\
+                    <option v-for="(mon, idx) in months" :value="idx">{{mon}}</option>\
+                  </select>\
+                </div>\
+                <div class="dvYear">\
+                  <span>Select Year: </span>\
+                  <select v-model="selectedYear">\
+                    <option v-for="(yer, idx) in years" :value="yer">{{yer}}</option>\
+                  </select>\
+                </div>\
+                <div class="dvButtons">\
+                  <b-button size="sm" variant="outline-success" @click="getfinance">Run Report</b-button>\
+                  <b-button size="sm" variant="primary">Print Report</b-button>\
+                </div>\
+              </div>',
+    data: function(){
+        return{
+            selectedMonth:"",
+            selectedYear:""
+        }
+    },
+    computed:{
+        months: function(){
+            return store.getters.getMonths;
+        },
+        years: function(){
+            return store.getters.getYears;
+        }
+    },
+    methods: {
+        getfinance: function(){
+            if (this.selectedMonth != "" && this.selectedYear != "")
+                store.dispatch("GetFinanceData", {parm: this.selectedMonth, parm1: this.selectedYear});
+        }
+    }
+})
+
+var _finance = Vue.component("fn-data",{
+    template: '<div id="dvFinance">\
+                  <div class="financeTitle">\
+                    <h3>Brampton triumphant church of god</h3>\
+                    <h3>income & expenditure</h3>\
+                    <h3>for the month of {{dte}}</h3>\
+                  </div>\
+                  <b-table></b-table>\
+                  <b-table></b-table>\
+              </div>',
+    computed:{
+        dte: function(){
+            store.getters.getPeriod;
+        }
+    }
+})
+
+var app = new Vue({
+    el: "#app",
+
+})
+</script>

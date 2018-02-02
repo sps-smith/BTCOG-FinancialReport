@@ -1,0 +1,15 @@
+{
+  "name": "btcog-financial-report",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {},
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint-config-standard": "^10.2.1",
+    "sp-build-tasks": "^1.4.4",
+    "tslint-config-standard": "^7.0.0"
+  }
+}
