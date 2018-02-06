@@ -9,6 +9,8 @@
   </div>
 </div>
 
+<script src="http://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
 <script src='https://cdn.polyfill.io/v2/polyfill.min.js'></script>
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
 <script src="https://unpkg.com/vuex"></script>
@@ -38,8 +40,8 @@ var _select = Vue.component("fn-select",{
               </div>',
     data: function(){
         return{
-            selectedMonth:"",
-            selectedYear:""
+            selectedMonth:0,
+            selectedYear:0
         }
     },
     computed:{
@@ -70,7 +72,7 @@ var _finance = Vue.component("fn-data",{
               </div>',
     computed:{
         dte: function(){
-            store.getters.getPeriod;
+            return store.getters.getPeriod;
         }
     }
 })
