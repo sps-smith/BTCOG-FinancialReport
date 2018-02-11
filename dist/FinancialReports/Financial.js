@@ -97,6 +97,18 @@ var store = new Vuex.Store({
               })
           })
 
+        },
+        getRevenueFields: function(context, payload, payload1){
+            var edate = Date.getDaysInMonth(payload, payload1);
+            var nm = Math.round(edate / 7);
+            var rm = edate % 7;
+            if (rm > 0)
+              nm += 1;
+            if (nm == 4)
+            {
+                
+            }
+
         }
     }
 })

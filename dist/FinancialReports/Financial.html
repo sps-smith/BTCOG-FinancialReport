@@ -67,8 +67,8 @@ var _finance = Vue.component("fn-data",{
                     <h3>income & expenditure</h3>\
                     <h3>for the month of {{dte}}</h3>\
                   </div>\
-                  <b-table></b-table>\
-                  <b-table></b-table>\
+                  <b-table :items="revenueItems" :fields="revenueFields"></b-table>\
+                  <b-table :items="expenseItems" :fields="expenseFields"></b-table>\
               </div>',
     computed:{
         dte: function(){
