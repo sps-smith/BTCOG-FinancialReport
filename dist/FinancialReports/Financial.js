@@ -5,8 +5,11 @@ var store = new Vuex.Store({
       _years: [2014,2015,2016,2017, 2018, 2019, 2020],
       _months: ['','January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       _selectedPeriod: "",
+      _selectedMonth:0,
       _expenses:[],
-      _revenue:[]
+      _revenue:[],
+      _weeks:5,
+      _days:31
     },
     getters: {
         getMonths: function(state){
@@ -17,6 +20,43 @@ var store = new Vuex.Store({
         },
         getPeriod: function(state){
             return state._selectedPeriod;
+        },
+        getRevenue: function(state){
+          var data = [], revAry = [],  dt = {};
+            state._revenue.forEach(function(item){
+                data = [];
+                item.Period.forEach(function(dta){
+                    data.push(dta);
+                })
+
+                dt = {
+                    Revenue: item.Revenue,
+                    week1: data[0],
+                    week2: data[1],
+                    week3: data[2],
+                    week4: data[3],
+                    week5: data[4]
+                }
+
+                revAry.push(dt)
+            })
+            return revAry.sort(function(a,b){
+                return a.Revenue > b.Revenue;
+            });
+        },
+        getExpense: function (state) {
+          return state._expenses.sort(function (a, b) {
+            return a.Expense > b.Expense;
+          });
+        },
+        getSelectedMonth: function(state){
+            return state._selectedMonth;
+        },
+        getWeeks: function(state){
+            return state._weeks;
+        },
+        getDays: function(state){
+            return state._days;
         }
     },
     mutations:{
@@ -28,11 +68,21 @@ var store = new Vuex.Store({
         },
         setRevenue: function (state, payload) {
           state._revenue = payload;
+        },
+        setSelectedMonth: function(state, payload){
+            state._selectedMonth = payload;
+        },
+        setWeeks: function(state, payload){
+            state._weeks = payload;
+        },
+        setDays: function(state, payload){
+            state._days = payload;
         }
     },
     actions: {
         GetFinanceData: function(context, payload){
           var wrkary = [];
+          context.commit("setSelectedMonth", payload.parm);
           context.commit("setPeriod", context.state._months[payload.parm] + " " + payload.parm1);
           axios.get(_spPageContextInfo.webServerRelativeUrl + "/_api/web/lists/getbytitle('Expense Transactions')/items?$select=TransactionType/Title,TransactionDate,Amount&$filter=TransactionDate ge datetime'" + getFinanceStartDate(payload.parm, payload.parm1) + "' and TransactionDate le datetime'" + getFinanceEndDate(payload.parm, payload.parm1) + "'&$expand=TransactionType/Id", {
             headers: { "accept": "application/json;odata=verbose" }
@@ -94,20 +144,11 @@ var store = new Vuex.Store({
                       }
                   });
                   context.commit("setRevenue", wrkary);
+                  if (getnumberofweeks(payload.parm1, payload.parm) == 4)
+                      context.commit("setWeeks", 4);
+                  context.commit("setDays", Date.getDaysInMonth(payload.parm1, payload.parm));
               })
           })
-
-        },
-        getRevenueFields: function(context, payload, payload1){
-            var edate = Date.getDaysInMonth(payload, payload1);
-            var nm = Math.round(edate / 7);
-            var rm = edate % 7;
-            if (rm > 0)
-              nm += 1;
-            if (nm == 4)
-            {
-                
-            }
 
         }
     }
@@ -117,15 +158,19 @@ function getPeriodDay(dte){
     var dy = new Date(dte).getDate()
     if (dy <= 7)
       return 1;
-    else
-    {
-        var nm = Math.round(dy / 7);
-        var rm = dy % 7;
-        if (rm > 0)
-          nm += 1;
-        return nm
-    }
-}
+
+    if (dy > 7 && dy <= 14)
+      return 2;
+
+    if (dy > 14 && dy <= 21)
+      return 3;
+
+    if (dy > 21 && dy <= 28)
+      return 4;
+
+    if (dy > 28)
+      return 5;
+  }
 
 function getFinanceStartDate(mn, yr){
     var fdate = mn + "/01/" + yr;
@@ -135,4 +180,13 @@ function getFinanceStartDate(mn, yr){
 function getFinanceEndDate(mn, yr) {
     var edate = Date.getDaysInMonth(yr, mn)
   return new Date(mn + "/" + edate + "/" + yr).toISOString().substring(0, 10) + "T00:00:00";
+}
+
+function getnumberofweeks(payload, payload1) {
+  var edate = Date.getDaysInMonth(payload, payload1);
+  var nm = Math.round(edate / 7);
+  var rm = edate % 7;
+  if (rm > 0)
+    nm += 1;
+  return nm;
 }

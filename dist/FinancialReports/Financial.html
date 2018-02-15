@@ -67,12 +67,56 @@ var _finance = Vue.component("fn-data",{
                     <h3>income & expenditure</h3>\
                     <h3>for the month of {{dte}}</h3>\
                   </div>\
-                  <b-table :items="revenueItems" :fields="revenueFields"></b-table>\
-                  <b-table :items="expenseItems" :fields="expenseFields"></b-table>\
+                  <b-table v-if="revenueItems.length > 0" :items="revenueItems" :fields="revenueFields" foot-clone>\
+                      <template slot="HEAD_week1" slot-scope="data">\
+                          {{data.label}} <br/>\
+                          {{selectedMonth}}/1 to {{selectedMonth}}/7\
+                      </template>\
+                      <template slot="HEAD_week2" slot-scope="data">\
+                          {{data.label}} <br/>\
+                          {{selectedMonth}}/8 to {{selectedMonth}}/14\
+                      </template>\
+                      <template slot="HEAD_week3" slot-scope="data">\
+                          {{data.label}} <br/>\
+                          {{selectedMonth}}/15 to {{selectedMonth}}/21\
+                      </template>\
+                      <template slot="HEAD_week4" slot-scope="data">\
+                          {{data.label}} <br/>\
+                          {{selectedMonth}}/22 to {{selectedMonth}}/28\
+                      </template>\
+                      <template v-if="weeks == 5" slot="HEAD_week5" slot-scope="data">\
+                          {{data.label}} <br/>\
+                          {{selectedMonth}}/29 to {{selectedMonth}}/{{days}}\
+                      </template>\
+                      <template slot="HEAD_Total" slot-scope="data">\
+                          {{data.label}} \
+                      </template>\
+                  </b-table>\
+                  <b-table v-if="expenseItems.length > 0" :items="expenseItems" :fields="revenueFields" foot-clone></b-table>\
               </div>',
+    data: function(){
+        return{
+            revenueFields:["Revenue","week1", "week2", "week3", "week4", "week5", "total"]
+        }
+    },
     computed:{
         dte: function(){
             return store.getters.getPeriod;
+        },
+        revenueItems: function(){
+            return store.getters.getRevenue;
+        },
+        expenseItems: function () {
+            return store.getters.getExpense;
+        },
+        selectedMonth: function(){
+            return store.getters.getSelectedMonth;
+        },
+        weeks: function(){
+            return store.getters.getWeeks;
+        },
+        days: function(){
+            return store.getters.getDays;
         }
     }
 })
