@@ -9,7 +9,7 @@ var store = new Vuex.Store({
       _expenses:[],
       _revenue:[],
       _weeks:5,
-      _days:31
+      _days:0
     },
     getters: {
         getMonths: function(state){
@@ -30,7 +30,7 @@ var store = new Vuex.Store({
                 })
 
                 dt = {
-                    Revenue: item.Revenue,
+                    Title: item.Revenue,
                     week1: data[0],
                     week2: data[1],
                     week3: data[2],
@@ -41,14 +41,59 @@ var store = new Vuex.Store({
                 revAry.push(dt)
             })
             return revAry.sort(function(a,b){
-                return a.Revenue > b.Revenue;
+                return a.Title > b.Title;
             });
         },
         getExpense: function (state) {
-          return state._expenses.sort(function (a, b) {
-            return a.Expense > b.Expense;
-          });
+            var data = [], revAry = [],  dt = {};
+            state._expenses.forEach(function(item){
+                data = [];
+                item.Period.forEach(function(dta){
+                    data.push(dta);
+                })
+
+                dt = {
+                    Title: item.Expense,
+                    week1: data[0],
+                    week2: data[1],
+                    week3: data[2],
+                    week4: data[3],
+                    week5: data[4]
+                }
+
+                revAry.push(dt)
+            })
+            return revAry.sort(function(a,b){
+                return a.Title > b.Title;
+            });          
         },
+        getNetBalances: function(state){
+            var rev1 = 0, rev2 = 0, rev3 = 0, rev4 = 0, rev5 = 0;
+            var exp1 = 0, exp2 = 0, exp3 = 0, exp4 = 0, exp5 = 0;
+            var net1 = 0, net2 = 0, net3 = 0, net4 = 0, net5 = 0;
+            state._revenue.forEach(function(item){
+                rev1 += item.Period[0];
+                rev2 += item.Period[1];
+                rev3 += item.Period[2];
+                rev4 += item.Period[3]
+                rev5 += item.Period[4];
+            });
+            state._expenses.forEach(function(item){
+                //item.Period.forEach(function(dta){
+                    exp1 += item.Period[0];
+                    exp2 += item.Period[1];
+                    exp3 += item.Period[2];
+                    exp4 += item.Period[3];
+                    exp5 += item.Period[4];
+               // })
+            });
+            net1 = rev1 - exp1;
+            net2 =  rev2 -  exp2;
+            net3 =   rev3 -  exp3;
+            net4 =   rev4 -  exp4;
+            net5 =  rev5 -  exp5;
+            return [{Title:"Balance", bal1: net1, bal2: net2, bal3: net3, bal4:net4, bal5:net5}];
+        }, 
         getSelectedMonth: function(state){
             return state._selectedMonth;
         },
@@ -57,6 +102,11 @@ var store = new Vuex.Store({
         },
         getDays: function(state){
             return state._days;
+        },
+        getRevenueLoaded: function(state){
+            if (state._revenue.length > 0)
+                return false;
+            return true;
         }
     },
     mutations:{
@@ -144,9 +194,8 @@ var store = new Vuex.Store({
                       }
                   });
                   context.commit("setRevenue", wrkary);
-                  if (getnumberofweeks(payload.parm1, payload.parm) == 4)
-                      context.commit("setWeeks", 4);
-                  context.commit("setDays", Date.getDaysInMonth(payload.parm1, payload.parm));
+                    context.commit("setWeeks", getnumberofweeks(payload.parm1, payload.parm));
+                  context.commit("setDays", Date.getDaysInMonth(payload.parm1, payload.parm-1));
               })
           })
 
@@ -178,12 +227,12 @@ function getFinanceStartDate(mn, yr){
 }
 
 function getFinanceEndDate(mn, yr) {
-    var edate = Date.getDaysInMonth(yr, mn)
+    var edate = Date.getDaysInMonth(yr, mn-1)
   return new Date(mn + "/" + edate + "/" + yr).toISOString().substring(0, 10) + "T00:00:00";
 }
 
 function getnumberofweeks(payload, payload1) {
-  var edate = Date.getDaysInMonth(payload, payload1);
+  var edate = Date.getDaysInMonth(payload, payload1-1);
   var nm = Math.round(edate / 7);
   var rm = edate % 7;
   if (rm > 0)

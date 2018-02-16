@@ -10,6 +10,7 @@
 </div>
 
 <script src="http://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
 <script src='https://cdn.polyfill.io/v2/polyfill.min.js'></script>
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
@@ -34,14 +35,15 @@ var _select = Vue.component("fn-select",{
                   </select>\
                 </div>\
                 <div class="dvButtons">\
-                  <b-button size="sm" variant="outline-success" @click="getfinance">Run Report</b-button>\
-                  <b-button size="sm" variant="primary">Print Report</b-button>\
+                  <b-button size="sm" variant="success" @click="getfinance" :disabled="disablebutton">Run Report</b-button>\
+                  <b-button size="sm" variant="primary" @click="printreport" :disabled="printdisabled">Print Report</b-button>\
                 </div>\
               </div>',
     data: function(){
         return{
             selectedMonth:0,
-            selectedYear:0
+            selectedYear:0,
+            disablebutton: true
         }
     },
     computed:{
@@ -50,12 +52,42 @@ var _select = Vue.component("fn-select",{
         },
         years: function(){
             return store.getters.getYears;
+        },
+        printdisabled: function(){
+            return store.getters.getRevenueLoaded;
         }
     },
     methods: {
         getfinance: function(){
             if (this.selectedMonth != "" && this.selectedYear != "")
                 store.dispatch("GetFinanceData", {parm: this.selectedMonth, parm1: this.selectedYear});
+        },
+        printreport: function () {
+            var mywindow = window.open('', 'Data', 'height=800');
+            mywindow.document.write('<html><head><title></title>');            
+            mywindow.document.write('<style type="text/css">table {width:100%;border:1px solid lightgrey; font-size:9pt;} .totalcss {border-top: 1px solid #000; border-bottom: 4px double #000;} .totalcss th  {vertical-align: middle;} .noheader {display: none;} .netcss {border-top: 4px double #000; border-bottom: 4px double #000;} .netcss td{vertical-align: middle;font-weight: bold;} .neg{color: red;} h2{ text-align:left} td, th{ text-align:right; width:10%;} div.financeTitle h2{text-align: center; font-size: 1.2rem; font-weight: normal; margin-bottom: 0; text-transform: uppercase;} td:first-child, th:first-child{ text-align:left; width:40%;}</style>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write($("div#dvFinance").html());
+            mywindow.document.write('</body></html>');
+
+            mywindow.document.close();
+            mywindow.focus();
+            mywindow.print();
+            mywindow.close();
+        }
+    },
+    watch:{
+        selectedMonth: function(){
+            if (this.selectedMonth > 0 && this.selectedYear > 0)
+                this.disablebutton = false;
+            else
+                this.disablebutton = true;
+        },
+        selectedYear: function(){
+            if (this.selectedMonth > 0 && this.selectedYear > 0)
+                this.disablebutton = false;
+            else
+                this.disablebutton = true;
         }
     }
 })
@@ -63,40 +95,17 @@ var _select = Vue.component("fn-select",{
 var _finance = Vue.component("fn-data",{
     template: '<div id="dvFinance">\
                   <div class="financeTitle">\
-                    <h3>Brampton triumphant church of god</h3>\
-                    <h3>income & expenditure</h3>\
-                    <h3>for the month of {{dte}}</h3>\
+                    <h2>Brampton triumphant church of god</h2>\
+                    <h2>income & expenditure</h2>\
+                    <h2>for the month of {{dte}}</h2>\
                   </div>\
-                  <b-table v-if="revenueItems.length > 0" :items="revenueItems" :fields="revenueFields" foot-clone>\
-                      <template slot="HEAD_week1" slot-scope="data">\
-                          {{data.label}} <br/>\
-                          {{selectedMonth}}/1 to {{selectedMonth}}/7\
-                      </template>\
-                      <template slot="HEAD_week2" slot-scope="data">\
-                          {{data.label}} <br/>\
-                          {{selectedMonth}}/8 to {{selectedMonth}}/14\
-                      </template>\
-                      <template slot="HEAD_week3" slot-scope="data">\
-                          {{data.label}} <br/>\
-                          {{selectedMonth}}/15 to {{selectedMonth}}/21\
-                      </template>\
-                      <template slot="HEAD_week4" slot-scope="data">\
-                          {{data.label}} <br/>\
-                          {{selectedMonth}}/22 to {{selectedMonth}}/28\
-                      </template>\
-                      <template v-if="weeks == 5" slot="HEAD_week5" slot-scope="data">\
-                          {{data.label}} <br/>\
-                          {{selectedMonth}}/29 to {{selectedMonth}}/{{days}}\
-                      </template>\
-                      <template slot="HEAD_Total" slot-scope="data">\
-                          {{data.label}} \
-                      </template>\
-                  </b-table>\
-                  <b-table v-if="expenseItems.length > 0" :items="expenseItems" :fields="revenueFields" foot-clone></b-table>\
+                  <fin-table :data="revenueItems" :fields="fields" :typelabel="\'R\'"></fin-table>\
+                  <br/>\
+                  <fin-table :data="expenseItems" :fields="fields" :typelabel="\'E\'"></fin-table>\
               </div>',
     data: function(){
         return{
-            revenueFields:["Revenue","week1", "week2", "week3", "week4", "week5", "total"]
+            fields:["Title",{ key: "week1", formatter: "getValue"}, {key:"week2", formatter: "getValue"}, {key:"week3", formatter: "getValue"}, {key:"week4", formatter: "getValue"}, {key: "week5", formatter: "getValue"}, {key:"total", formatter: "getTotal"}]
         }
     },
     computed:{
@@ -109,6 +118,100 @@ var _finance = Vue.component("fn-data",{
         expenseItems: function () {
             return store.getters.getExpense;
         },
+    }
+})
+
+var _finance = Vue.component("fin-table",{
+    template:'<div>\
+                <b-table v-if="data.length > 0" :items="data" :fields="fields" foot-clone tfoot-tr-class="totalcss">\
+                    <template slot="HEAD_Title" slot-scope="data">\
+                        <h2>{{getTypeLabel}} </h2>\
+                    </template>\
+                    <template slot="HEAD_week1" slot-scope="data">\
+                        {{data.label}} <br/>\
+                        {{selectedMonth}}/1 to {{selectedMonth}}/7\
+                    </template>\
+                    <template slot="HEAD_week2" slot-scope="data">\
+                        {{data.label}} <br/>\
+                        {{selectedMonth}}/8 to {{selectedMonth}}/14\
+                    </template>\
+                    <template slot="HEAD_week3" slot-scope="data">\
+                        {{data.label}} <br/>\
+                        {{selectedMonth}}/15 to {{selectedMonth}}/21\
+                    </template>\
+                    <template slot="HEAD_week4" slot-scope="data">\
+                        {{data.label}} <br/>\
+                        {{selectedMonth}}/22 to {{selectedMonth}}/28\
+                    </template>\
+                    <template v-if="weeks == 5" slot="HEAD_week5" slot-scope="data">\
+                        {{data.label}} <br/>\
+                        {{selectedMonth}}/29 to {{selectedMonth}}/{{days}}\
+                    </template>\
+                    <template slot="HEAD_Total" slot-scope="data">\
+                        {{data.label}} \
+                    </template>\
+                    <template v-if="weeks == 5" slot="week5" slot-scope="data">\
+                        {{data.value}}\
+                    </template>\
+                    <template slot="FOOT_Title" slot-scope="data">\
+                        <h2>Total {{getTypeLabel}}</h2>\
+                    </template>\
+                    <template slot="FOOT_week1" slot-scope="data">\
+                        {{week1Totals}}\
+                    </template>\
+                    <template slot="FOOT_week2" slot-scope="data">\
+                        {{week2Totals}}\
+                    </template>\
+                    <template slot="FOOT_week3" slot-scope="data">\
+                        {{week3Totals}}\
+                    </template>\
+                    <template slot="FOOT_week4" slot-scope="data">\
+                        {{week4Totals}}\
+                    </template>\
+                    <template v-if="weeks == 5" slot="FOOT_week5" slot-scope="data">\
+                        {{week5Totals}}\
+                    </template>\
+                    <template slot="FOOT_total" slot-scope="data">\
+                        {{RevenueTotals}}\
+                    </template>\
+                </b-table>\
+                <b-table v-if="typelabel == \'E\' && data.length > 0" :fields="dfields" :items="NetRevenue" thead-tr-class="noheader" tbody-tr-class="netcss">\
+                    <template slot="Title" slot-scope="data">\
+                        <h2>Balances/Net Revenue</h2>\
+                    </template>\
+                    <template slot="bal1" slot-scope="data">\
+                        <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
+                    </template>\
+                    <template slot="bal2" slot-scope="data">\
+                        <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
+                    </template>\
+                    <template slot="bal3" slot-scope="data">\
+                        <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
+                    </template>\
+                    <template slot="bal4" slot-scope="data">\
+                        <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
+                    </template>\
+                    <template v-if="weeks == 5" slot="bal5" slot-scope="data">\
+                        <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
+                    </template>\
+                    <template slot="net" slot-scope="data">\
+                        <span :class="{ neg: negitive(NetTotals)}">{{NetTotals}}</span>\
+                    </template>\
+                </b-table>\
+            </div>',
+    props:["data","fields","typelabel"],
+    data: function(){
+        return{
+            dfields:["Title",{key:"bal1", formatter: "getNetValues"}, {key:"bal2",  formatter: "getNetValues"},{key:"bal3",  formatter: "getNetValues"}, {key:"bal4",  formatter: "getNetValues"}, {key:"bal5",  formatter: "getNetValues"}, {key:"net",  formatter: "getNetValues"}]
+        }
+    },
+    computed:{
+        getTypeLabel: function(){
+            if (this.typelabel == "R")
+                return "Revenue";
+            else
+                return "Operating Expense";
+        },
         selectedMonth: function(){
             return store.getters.getSelectedMonth;
         },
@@ -117,6 +220,78 @@ var _finance = Vue.component("fn-data",{
         },
         days: function(){
             return store.getters.getDays;
+        },
+        week1Totals: function(){
+            var tot = 0;
+            this.data.forEach(function(item){
+                tot += item.week1;
+            })
+            return accounting.formatMoney(tot);
+        },
+        week2Totals: function(){
+            var tot = 0;
+            this.data.forEach(function(item){
+                tot += item.week2;
+            })
+            return accounting.formatMoney(tot);
+        },
+        week3Totals: function(){
+            var tot = 0;
+            this.data.forEach(function(item){
+                tot += item.week3;
+            })
+            return accounting.formatMoney(tot);
+        },
+        week4Totals: function(){
+            var tot = 0;
+            this.data.forEach(function(item){
+                tot += item.week4;
+            })
+            return accounting.formatMoney(tot);
+        },
+        week5Totals: function(){
+            var tot = 0;
+            this.data.forEach(function(item){
+                tot += item.week5;
+            })
+            return accounting.formatMoney(tot);
+        },
+        RevenueTotals: function(){
+            var tot = 0;
+            this.data.forEach(function(item){
+                tot += item.week1 + item.week2 + item.week3 + item.week4 + item.week5;
+            })
+            return accounting.formatMoney(tot);
+        },
+        NetRevenue: function(){
+            return store.getters.getNetBalances;
+        },
+        NetTotals: function(){
+            var tot = this.NetRevenue[0].bal1 + this.NetRevenue[0].bal2 + this.NetRevenue[0].bal3 + this.NetRevenue[0].bal4 + this.NetRevenue[0].bal5;
+            if (tot < 0)
+                return accounting.formatMoney(tot,{format: "($ %v)"});
+            else
+                return accounting.formatMoney(tot);
+        }
+    },
+    methods:{
+        getValue: function(payload){
+            return accounting.formatMoney(payload);
+        },
+        getNetValues: function(payload){
+            if (payload < 0)
+                return accounting.formatMoney(payload,{format: "($ %v)"});
+            else
+                return accounting.formatMoney(payload);
+        },
+        getTotal:function(value, key, item){
+            return accounting.formatMoney(item.week1 + item.week2 + item.week3 + item.week4 + item.week5);
+        },
+        negitive: function(payload){
+            if (payload.indexOf("-") > -1)
+                return true;
+            else
+                return false;
         }
     }
 })

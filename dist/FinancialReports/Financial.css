@@ -1,3 +1,9 @@
+body{
+    font-size: .9rem;
+}
+*, ::after, ::before {
+    box-sizing: content-box;
+}
 div#dvSelect
 {
     display: flex;
@@ -16,9 +22,80 @@ div.dvButtons, div.dvYear
     padding-top: 40px;
 }
 
-div.financeTitle h3
+div.financeTitle h2
 {
     text-align: center;
     text-transform: uppercase;
     margin-bottom: 0;
+    font-size:1.2rem;
+    font-weight: normal;
+}
+
+div#dvFinance table td, div#dvFinance table th{
+    text-align: right;
+    width:10%;
+}
+
+div#dvFinance table td:first-child, div#dvFinance table th:first-child{
+    text-align: left;
+    width: 40%;
+}
+
+div#dvFinance h2
+{
+    font-size:1.2rem;
+    font-weight: normal;
+}
+
+.table td, .table th
+{
+    padding:0;
+    border-top:none;
+}
+
+.table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+}
+
+.ms-core-listMenu-verticalBox > .ms-core-listMenu-item, .ms-core-listMenu-verticalBox li.static > .ms-core-listMenu-item
+{
+    line-height: 1;
+    font-size: 13px;
+}
+
+.totalcss
+{
+
+    border-top: 1px solid #000;
+    border-bottom: 4px double #000;
+}
+
+.totalcss th
+{
+    vertical-align: middle;
+}
+
+.noheader
+{
+    display: none;
+}
+
+.netcss
+{
+    border-top: 4px double #000;
+    border-bottom: 4px double #000;
+}
+
+.netcss td
+{
+    vertical-align: middle;
+    font-weight: bold;
+}
+
+.neg
+{
+    color: red;
 }
