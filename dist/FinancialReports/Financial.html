@@ -124,77 +124,77 @@ var _finance = Vue.component("fn-data",{
 var _finance = Vue.component("fin-table",{
     template:'<div>\
                 <b-table v-if="data.length > 0" :items="data" :fields="fields" foot-clone tfoot-tr-class="totalcss">\
-                    <template slot="HEAD_Title" slot-scope="data">\
+                    <template v-slot:head(Title)="data">\
                         <h2>{{getTypeLabel}} </h2>\
                     </template>\
-                    <template slot="HEAD_week1" slot-scope="data">\
+                    <template v-slot:head(week1)="data">\
                         {{data.label}} <br/>\
                         {{selectedMonth}}/1 to {{selectedMonth}}/7\
                     </template>\
-                    <template slot="HEAD_week2" slot-scope="data">\
+                    <template v-slot:head(week2)="data">\
                         {{data.label}} <br/>\
                         {{selectedMonth}}/8 to {{selectedMonth}}/14\
                     </template>\
-                    <template slot="HEAD_week3" slot-scope="data">\
+                    <template v-slot:head(week3)="data">\
                         {{data.label}} <br/>\
                         {{selectedMonth}}/15 to {{selectedMonth}}/21\
                     </template>\
-                    <template slot="HEAD_week4" slot-scope="data">\
+                    <template v-slot:head(week4)="data">\
                         {{data.label}} <br/>\
                         {{selectedMonth}}/22 to {{selectedMonth}}/28\
                     </template>\
-                    <template v-if="weeks == 5" slot="HEAD_week5" slot-scope="data">\
+                    <template v-if="weeks == 5" v-slot:head(week5)="data">\
                         {{data.label}} <br/>\
                         {{selectedMonth}}/29 to {{selectedMonth}}/{{days}}\
                     </template>\
-                    <template slot="HEAD_Total" slot-scope="data">\
+                    <template v-slot:head(Total)="data">\
                         {{data.label}} \
                     </template>\
-                    <template v-if="weeks == 5" slot="week5" slot-scope="data">\
+                    <template v-if="weeks == 5" v-slot:cell(week5)="data">\
                         {{data.value}}\
                     </template>\
-                    <template slot="FOOT_Title" slot-scope="data">\
+                    <template v-slot:foot(Title)="data">\
                         <h2>Total {{getTypeLabel}}</h2>\
                     </template>\
-                    <template slot="FOOT_week1" slot-scope="data">\
+                    <template v-slot:foot(week1)="data">\
                         {{week1Totals}}\
                     </template>\
-                    <template slot="FOOT_week2" slot-scope="data">\
+                    <template v-slot:foot(week2)="data">\
                         {{week2Totals}}\
                     </template>\
-                    <template slot="FOOT_week3" slot-scope="data">\
+                    <template v-slot:foot(week3)="data">\
                         {{week3Totals}}\
                     </template>\
-                    <template slot="FOOT_week4" slot-scope="data">\
+                    <template v-slot:foot(week4)="data">\
                         {{week4Totals}}\
                     </template>\
-                    <template v-if="weeks == 5" slot="FOOT_week5" slot-scope="data">\
+                    <template v-if="weeks == 5" v-slot:foot(week5)="data">\
                         {{week5Totals}}\
                     </template>\
-                    <template slot="FOOT_total" slot-scope="data">\
+                    <template v-slot:foot()="data">\
                         {{RevenueTotals}}\
                     </template>\
                 </b-table>\
                 <b-table v-if="typelabel == \'E\' && data.length > 0" :fields="dfields" :items="NetRevenue" thead-tr-class="noheader" tbody-tr-class="netcss">\
-                    <template slot="Title" slot-scope="data">\
+                    <template v-slot:cell(Title)="data">\
                         <h2>Balances/Net Revenue</h2>\
                     </template>\
-                    <template slot="bal1" slot-scope="data">\
+                    <template v-slot:cell(bal1)="data">\
                         <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
                     </template>\
-                    <template slot="bal2" slot-scope="data">\
+                    <template v-slot:cell(bal2)="data">\
                         <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
                     </template>\
-                    <template slot="bal3" slot-scope="data">\
+                    <template v-slot:cell(bal3)="data">\
                         <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
                     </template>\
-                    <template slot="bal4" slot-scope="data">\
+                    <template v-slot:cell(bal4)="data">\
                         <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
                     </template>\
-                    <template v-if="weeks == 5" slot="bal5" slot-scope="data">\
+                    <template v-if="weeks == 5" v-slot:cell(bal5)="data">\
                         <span :class="{ neg: negitive(data.value)}">{{data.value}}</span>\
                     </template>\
-                    <template slot="net" slot-scope="data">\
+                    <template v-slot:cell(net)="data">\
                         <span :class="{ neg: negitive(NetTotals)}">{{NetTotals}}</span>\
                     </template>\
                 </b-table>\

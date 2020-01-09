@@ -2,7 +2,7 @@
 
 var store = new Vuex.Store({
     state:{
-      _years: [2014,2015,2016,2017, 2018, 2019, 2020],
+      //_years: [2014,2015,2016,2017, 2018, 2019, 2020],
       _months: ['','January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       _selectedPeriod: "",
       _selectedMonth:0,
@@ -16,7 +16,13 @@ var store = new Vuex.Store({
             return state._months;
         },
         getYears: function(state){
-            return state._years;
+            var dt = new Date().getFullYear();
+            var data  = [];
+            data.push(dt);
+            for(var x=1; x <=4;x++){
+                data.push(dt - x);
+            }
+            return data;
         },
         getPeriod: function(state){
             return state._selectedPeriod;
