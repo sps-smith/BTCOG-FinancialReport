@@ -1,6 +1,17 @@
-<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
-<link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
-<link href="../siteassets/financialreports/financial.css?v=1.4" rel="stylesheet">
+<link
+  type="text/css"
+  rel="stylesheet"
+  href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css"
+/>
+<link
+  type="text/css"
+  rel="stylesheet"
+  href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"
+/>
+<link
+  href="../siteassets/financialreports/financial.css?v=1.4"
+  rel="stylesheet"
+/>
 
 <div>
   <div id="app">
@@ -12,16 +23,21 @@
 <script src="http://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
-<script src='https://cdn.polyfill.io/v2/polyfill.min.js'></script>
-<script src="https://unpkg.com/vue/dist/vue.js"></script>
-<script src="https://unpkg.com/vuex"></script>
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+<!-- <script src="https://unpkg.com/vue/dist/vue.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.1/vue.min.js"></script>
+<!-- <script src="https://unpkg.com/vuex"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vuex/2.0.0/vuex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js"></script>
 <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
-<script type="text/javascript" src="../siteassets/financialreports/Financial.js"></script>
+<script
+  type="text/javascript"
+  src="../siteassets/financialreports/Financial.js"
+></script>
 <script>
-
-var _select = Vue.component("fn-select",{
-    template:'<div id="dvSelect">\
+  var _select = Vue.component("fn-select", {
+    template:
+      '<div id="dvSelect">\
                 <div>\
                   <span>Select Month: </span>\
                   <select v-model="selectedMonth">\
@@ -39,61 +55,65 @@ var _select = Vue.component("fn-select",{
                   <b-button size="sm" variant="primary" @click="printreport" :disabled="printdisabled">Print Report</b-button>\
                 </div>\
               </div>',
-    data: function(){
-        return{
-            selectedMonth:0,
-            selectedYear:0,
-            disablebutton: true
-        }
+    data: function () {
+      return {
+        selectedMonth: 0,
+        selectedYear: 0,
+        disablebutton: true,
+      };
     },
-    computed:{
-        months: function(){
-            return store.getters.getMonths;
-        },
-        years: function(){
-            return store.getters.getYears;
-        },
-        printdisabled: function(){
-            return store.getters.getRevenueLoaded;
-        }
+    computed: {
+      months: function () {
+        return store.getters.getMonths;
+      },
+      years: function () {
+        return store.getters.getYears;
+      },
+      printdisabled: function () {
+        return store.getters.getRevenueLoaded;
+      },
     },
     methods: {
-        getfinance: function(){
-            if (this.selectedMonth != "" && this.selectedYear != "")
-                store.dispatch("GetFinanceData", {parm: this.selectedMonth, parm1: this.selectedYear});
-        },
-        printreport: function () {
-            var mywindow = window.open('', 'Data', 'height=800');
-            mywindow.document.write('<html><head><title></title>');            
-            mywindow.document.write('<style type="text/css">table {width:100%;border:1px solid lightgrey; font-size:9pt;} .totalcss {border-top: 1px solid #000; border-bottom: 4px double #000;} .totalcss th  {vertical-align: middle;} .noheader {display: none;} .netcss {border-top: 4px double #000; border-bottom: 4px double #000;} .netcss td{vertical-align: middle;font-weight: bold;} .neg{color: red;} h2{ text-align:left} td, th{ text-align:right; width:10%;} div.financeTitle h2{text-align: center; font-size: 1.2rem; font-weight: normal; margin-bottom: 0; text-transform: uppercase;} td:first-child, th:first-child{ text-align:left; width:40%;}</style>');
-            mywindow.document.write('</head><body >');
-            mywindow.document.write($("div#dvFinance").html());
-            mywindow.document.write('</body></html>');
+      getfinance: function () {
+        if (this.selectedMonth != "" && this.selectedYear != "")
+          store.dispatch("GetFinanceData", {
+            parm: this.selectedMonth,
+            parm1: this.selectedYear,
+          });
+      },
+      printreport: function () {
+        var mywindow = window.open("", "Data", "height=800");
+        mywindow.document.write("<html><head><title></title>");
+        mywindow.document.write(
+          '<style type="text/css">table {width:100%;border:1px solid lightgrey; font-size:9pt;} .totalcss {border-top: 1px solid #000; border-bottom: 4px double #000;} .totalcss th  {vertical-align: middle;} .noheader {display: none;} .netcss {border-top: 4px double #000; border-bottom: 4px double #000;} .netcss td{vertical-align: middle;font-weight: bold;} .neg{color: red;} h2{ text-align:left} td, th{ text-align:right; width:10%;} div.financeTitle h2{text-align: center; font-size: 1.2rem; font-weight: normal; margin-bottom: 0; text-transform: uppercase;} td:first-child, th:first-child{ text-align:left; width:40%;}</style>'
+        );
+        mywindow.document.write("</head><body >");
+        mywindow.document.write($("div#dvFinance").html());
+        mywindow.document.write("</body></html>");
 
-            mywindow.document.close();
-            mywindow.focus();
-            mywindow.print();
-            mywindow.close();
-        }
+        mywindow.document.close();
+        mywindow.focus();
+        mywindow.print();
+        mywindow.close();
+      },
     },
-    watch:{
-        selectedMonth: function(){
-            if (this.selectedMonth > 0 && this.selectedYear > 0)
-                this.disablebutton = false;
-            else
-                this.disablebutton = true;
-        },
-        selectedYear: function(){
-            if (this.selectedMonth > 0 && this.selectedYear > 0)
-                this.disablebutton = false;
-            else
-                this.disablebutton = true;
-        }
-    }
-})
+    watch: {
+      selectedMonth: function () {
+        if (this.selectedMonth > 0 && this.selectedYear > 0)
+          this.disablebutton = false;
+        else this.disablebutton = true;
+      },
+      selectedYear: function () {
+        if (this.selectedMonth > 0 && this.selectedYear > 0)
+          this.disablebutton = false;
+        else this.disablebutton = true;
+      },
+    },
+  });
 
-var _finance = Vue.component("fn-data",{
-    template: '<div id="dvFinance">\
+  var _finance = Vue.component("fn-data", {
+    template:
+      '<div id="dvFinance">\
                   <div class="financeTitle">\
                     <h2>Brampton triumphant church of god</h2>\
                     <h2>income & expenditure</h2>\
@@ -103,26 +123,35 @@ var _finance = Vue.component("fn-data",{
                   <br/>\
                   <fin-table :data="expenseItems" :fields="fields" :typelabel="\'E\'"></fin-table>\
               </div>',
-    data: function(){
-        return{
-            fields:["Title",{ key: "week1", formatter: "getValue"}, {key:"week2", formatter: "getValue"}, {key:"week3", formatter: "getValue"}, {key:"week4", formatter: "getValue"}, {key: "week5", formatter: "getValue"}, {key:"total", formatter: "getTotal"}]
-        }
+    data: function () {
+      return {
+        fields: [
+          "Title",
+          { key: "week1", formatter: "getValue" },
+          { key: "week2", formatter: "getValue" },
+          { key: "week3", formatter: "getValue" },
+          { key: "week4", formatter: "getValue" },
+          { key: "week5", formatter: "getValue" },
+          { key: "total", formatter: "getTotal" },
+        ],
+      };
     },
-    computed:{
-        dte: function(){
-            return store.getters.getPeriod;
-        },
-        revenueItems: function(){
-            return store.getters.getRevenue;
-        },
-        expenseItems: function () {
-            return store.getters.getExpense;
-        },
-    }
-})
+    computed: {
+      dte: function () {
+        return store.getters.getPeriod;
+      },
+      revenueItems: function () {
+        return store.getters.getRevenue;
+      },
+      expenseItems: function () {
+        return store.getters.getExpense;
+      },
+    },
+  });
 
-var _finance = Vue.component("fin-table",{
-    template:'<div>\
+  var _finance = Vue.component("fin-table", {
+    template:
+      '<div>\
                 <b-table v-if="data.length > 0" :items="data" :fields="fields" foot-clone tfoot-tr-class="totalcss">\
                     <template v-slot:head(Title)="data">\
                         <h2>{{getTypeLabel}} </h2>\
@@ -199,105 +228,112 @@ var _finance = Vue.component("fin-table",{
                     </template>\
                 </b-table>\
             </div>',
-    props:["data","fields","typelabel"],
-    data: function(){
-        return{
-            dfields:["Title",{key:"bal1", formatter: "getNetValues"}, {key:"bal2",  formatter: "getNetValues"},{key:"bal3",  formatter: "getNetValues"}, {key:"bal4",  formatter: "getNetValues"}, {key:"bal5",  formatter: "getNetValues"}, {key:"net",  formatter: "getNetValues"}]
-        }
+    props: ["data", "fields", "typelabel"],
+    data: function () {
+      return {
+        dfields: [
+          "Title",
+          { key: "bal1", formatter: "getNetValues" },
+          { key: "bal2", formatter: "getNetValues" },
+          { key: "bal3", formatter: "getNetValues" },
+          { key: "bal4", formatter: "getNetValues" },
+          { key: "bal5", formatter: "getNetValues" },
+          { key: "net", formatter: "getNetValues" },
+        ],
+      };
     },
-    computed:{
-        getTypeLabel: function(){
-            if (this.typelabel == "R")
-                return "Revenue";
-            else
-                return "Operating Expense";
-        },
-        selectedMonth: function(){
-            return store.getters.getSelectedMonth;
-        },
-        weeks: function(){
-            return store.getters.getWeeks;
-        },
-        days: function(){
-            return store.getters.getDays;
-        },
-        week1Totals: function(){
-            var tot = 0;
-            this.data.forEach(function(item){
-                tot += item.week1;
-            })
-            return accounting.formatMoney(tot);
-        },
-        week2Totals: function(){
-            var tot = 0;
-            this.data.forEach(function(item){
-                tot += item.week2;
-            })
-            return accounting.formatMoney(tot);
-        },
-        week3Totals: function(){
-            var tot = 0;
-            this.data.forEach(function(item){
-                tot += item.week3;
-            })
-            return accounting.formatMoney(tot);
-        },
-        week4Totals: function(){
-            var tot = 0;
-            this.data.forEach(function(item){
-                tot += item.week4;
-            })
-            return accounting.formatMoney(tot);
-        },
-        week5Totals: function(){
-            var tot = 0;
-            this.data.forEach(function(item){
-                tot += item.week5;
-            })
-            return accounting.formatMoney(tot);
-        },
-        RevenueTotals: function(){
-            var tot = 0;
-            this.data.forEach(function(item){
-                tot += item.week1 + item.week2 + item.week3 + item.week4 + item.week5;
-            })
-            return accounting.formatMoney(tot);
-        },
-        NetRevenue: function(){
-            return store.getters.getNetBalances;
-        },
-        NetTotals: function(){
-            var tot = this.NetRevenue[0].bal1 + this.NetRevenue[0].bal2 + this.NetRevenue[0].bal3 + this.NetRevenue[0].bal4 + this.NetRevenue[0].bal5;
-            if (tot < 0)
-                return accounting.formatMoney(tot,{format: "($ %v)"});
-            else
-                return accounting.formatMoney(tot);
-        }
+    computed: {
+      getTypeLabel: function () {
+        if (this.typelabel == "R") return "Revenue";
+        else return "Operating Expense";
+      },
+      selectedMonth: function () {
+        return store.getters.getSelectedMonth;
+      },
+      weeks: function () {
+        return store.getters.getWeeks;
+      },
+      days: function () {
+        return store.getters.getDays;
+      },
+      week1Totals: function () {
+        var tot = 0;
+        this.data.forEach(function (item) {
+          tot += item.week1;
+        });
+        return accounting.formatMoney(tot);
+      },
+      week2Totals: function () {
+        var tot = 0;
+        this.data.forEach(function (item) {
+          tot += item.week2;
+        });
+        return accounting.formatMoney(tot);
+      },
+      week3Totals: function () {
+        var tot = 0;
+        this.data.forEach(function (item) {
+          tot += item.week3;
+        });
+        return accounting.formatMoney(tot);
+      },
+      week4Totals: function () {
+        var tot = 0;
+        this.data.forEach(function (item) {
+          tot += item.week4;
+        });
+        return accounting.formatMoney(tot);
+      },
+      week5Totals: function () {
+        var tot = 0;
+        this.data.forEach(function (item) {
+          tot += item.week5;
+        });
+        return accounting.formatMoney(tot);
+      },
+      RevenueTotals: function () {
+        var tot = 0;
+        this.data.forEach(function (item) {
+          tot += item.week1 + item.week2 + item.week3 + item.week4 + item.week5;
+        });
+        return accounting.formatMoney(tot);
+      },
+      NetRevenue: function () {
+        return store.getters.getNetBalances;
+      },
+      NetTotals: function () {
+        var tot =
+          this.NetRevenue[0].bal1 +
+          this.NetRevenue[0].bal2 +
+          this.NetRevenue[0].bal3 +
+          this.NetRevenue[0].bal4 +
+          this.NetRevenue[0].bal5;
+        if (tot < 0) return accounting.formatMoney(tot, { format: "($ %v)" });
+        else return accounting.formatMoney(tot);
+      },
     },
-    methods:{
-        getValue: function(payload){
-            return accounting.formatMoney(payload);
-        },
-        getNetValues: function(payload){
-            if (payload < 0)
-                return accounting.formatMoney(payload,{format: "($ %v)"});
-            else
-                return accounting.formatMoney(payload);
-        },
-        getTotal:function(value, key, item){
-            return accounting.formatMoney(item.week1 + item.week2 + item.week3 + item.week4 + item.week5);
-        },
-        negitive: function(payload){
-            if (payload.indexOf("-") > -1)
-                return true;
-            else
-                return false;
-        }
-    }
-})
+    methods: {
+      getValue: function (payload) {
+        return accounting.formatMoney(payload);
+      },
+      getNetValues: function (payload) {
+        if (payload < 0)
+          return accounting.formatMoney(payload, { format: "($ %v)" });
+        else return accounting.formatMoney(payload);
+      },
+      getTotal: function (value, key, item) {
+        return accounting.formatMoney(
+          item.week1 + item.week2 + item.week3 + item.week4 + item.week5
+        );
+      },
+      negitive: function (payload) {
+        if (payload.indexOf("-") > -1) return true;
+        else return false;
+      },
+    },
+  });
 
-var app = new Vue({
+  var app = new Vue({
     el: "#app",
-
-})
+  });
 </script>
