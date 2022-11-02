@@ -9,7 +9,7 @@
   "dependencies": {},
   "devDependencies": {
     "eslint-config-standard": "^10.2.1",
-    "sp-build-tasks": "^1.8.3",
+    "sp-build-tasks": "^3.19.0",
     "tslint-config-standard": "^7.1.0"
   }
 }
